@@ -1,4 +1,4 @@
-Source: rednotebook
+Source: com.github.jendrikseipp.rednotebook-elementary
 Section: text
 Priority: optional
 Maintainer: Jendrik Seipp <jendrikseipp@gmail.com>
@@ -9,7 +9,7 @@ Homepage: http://rednotebook.sourceforge.net/
 Vcs-Git: git://github.com/jendrikseipp/rednotebook.git
 Vcs-Browser: https://github.com/jendrikseipp/rednotebook
 
-Package: rednotebook
+Package: com.github.jendrikseipp.rednotebook-elementary
 Architecture: all
 Depends: ${python3:Depends},
          ${misc:Depends},
