@@ -228,7 +228,7 @@ class RadioButtonPage(AssistantPage):
         if tooltip:
             description = Gtk.Label()
             description.set_alignment(0.0, 0.5)
-            description.set_markup(' ' * 5 + tooltip)
+            description.set_markup(' ' * 10 + tooltip)
             description.set_sensitive(sensitive)
             self.pack_start(description, False, False, 0)
 
@@ -288,7 +288,7 @@ class PathChooserPage(AssistantPage):
             self.chooser.set_current_folder(path)
         else:
             dirname, basename = os.path.split(path)
-            filename, old_ext = os.path.splitext(basename)
+            filename, _ = os.path.splitext(basename)
             self.chooser.set_current_folder(dirname)
             self.chooser.set_current_name(filename + '.' + extension)
 

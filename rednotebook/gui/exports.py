@@ -196,7 +196,7 @@ class ContentsPage(AssistantPage):
 
     def on_select_category(self, widget):
         selection = self.available_categories.get_selection()
-        nb_selected, selected_iter = selection.get_selected()
+        _, selected_iter = selection.get_selected()
 
         if selected_iter is not None:
             model_available = self.available_categories.get_model()
@@ -213,7 +213,7 @@ class ContentsPage(AssistantPage):
 
     def on_deselect_category(self, widget):
         selection = self.selected_categories.get_selection()
-        nb_selected, selected_iter = selection.get_selected()
+        _, selected_iter = selection.get_selected()
 
         if selected_iter is not None:
             model_available = self.available_categories.get_model()
@@ -540,12 +540,18 @@ class PdfExporter(Exporter):
     EXTENSION = 'pdf'
     FORMAT = 'pdf'
 
+    @classmethod
+    def is_available(cls):
+        return bool(browser.WebKit2)
+
     @property
     def DESCRIPTION(self):
         if self.is_available():
             return ''
+        elif filesystem.IS_WIN:
+            return _('(export to HTML, open in browser and print to PDF file)')
         else:
-            return '(' + _('requires pywebkitgtk') + ')'
+            return _('(requires WebKit2Gtk+ 4.0)')
 
 
 def get_exporters():

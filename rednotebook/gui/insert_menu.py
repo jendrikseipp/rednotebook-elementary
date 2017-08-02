@@ -176,14 +176,7 @@ class InsertMenu:
 
         filter = Gtk.FileFilter()
         filter.set_name("Images")
-        filter.add_mime_type("image/png")
-        filter.add_mime_type("image/jpeg")
-        filter.add_mime_type("image/gif")
-        filter.add_pattern("*.png")
-        filter.add_pattern("*.jpg")
-        filter.add_pattern("*.jpeg")
-        filter.add_pattern("*.gif")
-        filter.add_pattern("*.bmp")
+        filter.add_mime_type("image/*")
 
         picture_chooser.add_filter(filter)
 
@@ -252,7 +245,7 @@ class InsertMenu:
             filename = file_chooser.get_filename()
             filename = filesystem.get_local_url(filename)
             sel_text = self.main_window.day_text_field.get_selected_text()
-            head, tail = os.path.split(filename)
+            _, tail = os.path.split(filename)
             # It is always safer to add the "file://" protocol and the ""s
             return '[%s ""%s""]' % (sel_text or tail, filename)
 

@@ -7,7 +7,6 @@ please check back with me briefly about its status.
 
 === Roadmap ===
 
-X Don't switch between edit and review mode automatically by default.
 O Web: turn screenshots page into testimonials page.
 O Place subtags behind hashtags inside the text itself:
   I met #Sarah and we had some coffee talking about old times# then i went to #work.
@@ -40,6 +39,7 @@ O Search: Wrap or overlay search results to make more text visible.
 O Disable automatic switch between edit and preview mode by default.
 O Copy files and pictures into data subdirectory
 O Internal links to other days
+O Add menus to forward and backward buttons to navigate to recently visited days.
 
 Right-side tags panel:
   O Make the right panel an advanced option?
@@ -64,7 +64,6 @@ O Imports
   X RedNotebook Backup zipfile
   X RedNotebook data directory
   X Plain text files
-  X Tomboy (remove again?)
   O It's probably best to supply scripts for converting other sources like Evernote, Wordpress, ics (used by Google Calendar).
 
 O Custom-style journals? (Allow custom css files for preview rendering, e.g. mono-space, white text on black bg, margins)
@@ -82,7 +81,7 @@ O Make windows installer truly portable (leave no traces in registry)
 New format:
 O Use json instead of yaml?
 O Use standard paths? (Win: C:\Docs & Settings\username\My Documents,
-  Linux: ~/.local/share, ~/.config (http://live.gnome.org/Tomboy/Directories))
+  Linux: ~/.local/share, ~/.config (https://wiki.gnome.org/Apps/Tomboy/Directories))
 
 
 
