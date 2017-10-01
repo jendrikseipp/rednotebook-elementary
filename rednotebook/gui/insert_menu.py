@@ -176,9 +176,16 @@ class InsertMenu:
 
         filter = Gtk.FileFilter()
         filter.set_name("Images")
-        filter.add_mime_type("image/*")
+        filter.add_mime_type("image/bmp")
+        filter.add_mime_type("image/gif")
+        filter.add_mime_type("image/jpeg")
+        filter.add_mime_type("image/png")
+        # SVG images aren't found by MIME type on Windows.
+        filter.add_pattern("*.svg")
 
-        picture_chooser.add_filter(filter)
+        # File filter hides all files on MacOS.
+        if not filesystem.IS_MAC:
+            picture_chooser.add_filter(filter)
 
         # Add box for inserting image width.
         box = Gtk.HBox()

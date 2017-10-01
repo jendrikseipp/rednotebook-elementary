@@ -32,6 +32,7 @@ LANGUAGE = locale.getdefaultlocale()[0]
 REMOTE_PROTOCOLS = ['http', 'ftp', 'irc']
 
 IS_WIN = sys.platform.startswith('win')
+IS_MAC = (sys.platform == 'darwin')
 
 
 def has_system_tray():
@@ -301,3 +302,16 @@ def open_url(url):
         _open_url_with_call(url, 'open')
     else:
         _open_url_with_call(url, 'xdg-open')
+
+
+def get_peak_memory_in_kb():
+    try:
+        # This will only work on Linux systems.
+        with open("/proc/self/status") as status_file:
+            for line in status_file:
+                parts = line.split()
+                if parts[0] == "VmPeak:":
+                    return int(parts[1])
+    except IOError:
+        pass
+    raise Warning("warning: could not determine peak memory")

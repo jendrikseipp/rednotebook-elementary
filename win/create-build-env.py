@@ -1,9 +1,7 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 HELP = """\
 Installation instructions:
-
-Tested with wine stable 1.6.
 
 For later wine versions installing the suggested gecko and mono packages
 is optional. When asked to install them, you can click "Cancel".
@@ -30,12 +28,12 @@ from utils import run, fetch, install
 
 logging.basicConfig(level=logging.INFO)
 
-IS_WIN = sys.platform.startswith('win')
-IS_LINUX = not IS_WIN  # OSX currently not supported.
+IS_WIN = sys.platform in ['cygwin', 'msys', 'win32']
+USE_WINE = not IS_WIN
 
 def parse_args():
     parser = argparse.ArgumentParser(description=HELP)
-    if IS_LINUX:
+    if USE_WINE:
         parser.add_argument('build_dir')
     return parser.parse_args()
 
@@ -48,7 +46,7 @@ DRIVE_C = 'C:\\'
 PYTHON_DIR = 'Python34'
 SITE_PACKAGES = os.path.join(DRIVE_C, PYTHON_DIR, 'Lib', 'site-packages')
 SEVEN_ZIP = os.path.join(DRIVE_C, 'Program Files (x86)', '7-Zip', '7z.exe')
-if IS_LINUX:
+if USE_WINE:
     BUILD_DIR = args.build_dir
     utils.confirm_overwrite(BUILD_DIR)
     os.environ['WINEPREFIX'] = BUILD_DIR
@@ -64,6 +62,8 @@ INSTALLERS = [
     # '7z920.exe'),
     # Python 3.5 and 3.6 not supported by PyGObject AIO package. Also,
     # Python 3.5 needs wine-staging >= 2.8 and Python 3.6 fails for wine-staging 2.8.
+    # Python 3.4.4 is the last version of 3.4 with an installer.
+    # Python 3.4.4 works with wine-staging 2.14.
     ('https://www.python.org/ftp/python/3.4.4/python-3.4.4.msi',
      'python-3.4.4.msi'),
     ('https://downloads.sourceforge.net/project/pygobjectwin32/pygi-aio-3.18.2_rev12-setup_549872deadabb77a91efbc56c50fe15f969e5681.exe?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fpygobjectwin32%2Ffiles%2F&ts=1495353417&use_mirror=vorboss',
@@ -73,32 +73,28 @@ INSTALLERS = [
 ]
 
 TARBALLS = [
-    #('https://dl.dropboxusercontent.com/u/4780737/gtkbin-1.7.3.zip',
-    # 'gtkbin-1.7.3.zip', DRIVE_C),
-    #('https://dl.dropboxusercontent.com/u/4780737/pywebkitgtk.zip',
-    # 'pywebkitgtk.zip', SITE_PACKAGES),
+    ('https://www.dropbox.com/s/kljn5gsxm1fxa10/aspell-dicts.zip?dl=1',
+     'aspell-dicts.zip',
+     os.path.join(SITE_PACKAGES, 'gnome/lib/aspell-0.60/')),
 ]
 
 FILES = [
-    # Unneeded. Serves only as an example.
-    #('https://dl.dropboxusercontent.com/u/4780737/gtkspell.pyd',
-    #      os.path.join(DRIVE_C_REAL, 'Python27', 'Lib', 'site-packages', 'gtkspell.pyd'))
 ]
 
-print HELP
+print(HELP)
 
-# Python >= 3.5 set Windows Version to at least Windows 7.
+# For Python >= 3.5 set Windows Version to at least Windows 7.
 # run(['winecfg'])
 
 for url, filename in INSTALLERS:
     path = os.path.join(INSTALLERS_DIR, filename)
     fetch(url, path)
-    install(path, use_wine=IS_LINUX)
+    install(path, use_wine=USE_WINE)
 
 for url, filename, dest in TARBALLS:
     path = os.path.join(INSTALLERS_DIR, filename)
     fetch(url, path)
-    cmd = ['wine'] if IS_LINUX else []
+    cmd = ['wine'] if USE_WINE else []
     assert path.endswith('.zip'), path
     cmd.extend([SEVEN_ZIP, 'x', '-o' + dest, path])
     run(cmd)

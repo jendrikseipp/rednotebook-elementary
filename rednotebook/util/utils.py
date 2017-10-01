@@ -77,16 +77,18 @@ def get_new_version_number():
     version_pattern = re.compile(r'<span id="download-version">(.+)</span>')
 
     try:
-        project_xml = urlopen('http://rednotebook.sourceforge.net/').read().decode('utf-8')
-        match = version_pattern.search(project_xml)
-        if not match:
-            return None
-        new_version = match.group(1)
-        new_version = StrictVersion(new_version)
-        logging.info('%s is the latest version' % new_version)
-        return new_version
+        project_xml = urlopen('http://rednotebook.sourceforge.net/').read()
     except (IOError, http.client.HTTPException):
         return None
+
+    project_xml = project_xml.decode('utf-8')
+    match = version_pattern.search(project_xml)
+    if not match:
+        return None
+    new_version = match.group(1)
+    new_version = StrictVersion(new_version)
+    logging.info('%s is the latest version' % new_version)
+    return new_version
 
 
 def check_new_version(journal, current_version, startup=False):
@@ -138,6 +140,16 @@ def show_html_in_browser(html, filename):
     html_file = os.path.abspath(filename)
     html_file = 'file://' + html_file
     webbrowser.open(html_file)
+
+
+def compute_ngrams(text):
+    ngrams = []
+    words = text.split()
+    for word in words:
+        for i in range(0, len(word) + 1):
+            for j in range(i + 1, len(word) + 1):
+                ngrams.append(word[i:j])
+    return set(ngrams)
 
 
 class StreamDuplicator:

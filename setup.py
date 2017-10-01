@@ -26,9 +26,9 @@ To do a (test) installation to a different dir: "python setup.py install --root=
 To only compile the translations, run "python setup.py build_trans"
 """
 
-from glob import glob
+import glob
 import os
-import shutil
+import subprocess
 import sys
 
 from distutils.core import setup
@@ -36,33 +36,23 @@ from distutils import cmd
 from distutils.command.install_data import install_data as _install_data
 from distutils.command.build import build as _build
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, DIR)
 
 from rednotebook import info
-from rednotebook.external import msgfmt
 
+MSGFMT = os.path.join(DIR, 'rednotebook', 'external', 'msgfmt.py')
 
 def build_translation_files(po_dir, locale_dir):
     assert os.path.isdir(po_dir), po_dir
-    for path, names, filenames in os.walk(po_dir):
-        for f in filenames:
-            if f.endswith('.po'):
-                lang = os.path.splitext(f)[0]
-                src = os.path.join(path, f)
-                dest = os.path.join(locale_dir, lang, 'LC_MESSAGES', 'rednotebook.mo')
-                dest_dir = os.path.dirname(dest)
-                if not os.path.exists(dest_dir):
-                    os.makedirs(dest_dir)
-                # Recompile only if compiled version is outdated.
-                if not os.path.exists(dest):
-                    print('Compiling %s' % src)
-                    msgfmt.make(src, dest)
-                else:
-                    src_mtime = os.stat(src)[8]
-                    dest_mtime = os.stat(dest)[8]
-                    if src_mtime > dest_mtime:
-                        print('Compiling %s' % src)
-                        msgfmt.make(src, dest)
+    for src in sorted(glob.glob(os.path.join(po_dir, '*.po'))):
+        lang, _ = os.path.splitext(os.path.basename(src))
+        dest = os.path.join(locale_dir, lang, 'LC_MESSAGES', 'rednotebook.mo')
+        dest_dir = os.path.dirname(dest)
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
+        print('Compiling {src} to {dest}'.format(**locals()))
+        subprocess.check_call([sys.executable, MSGFMT, '--output-file', dest, src])
 
 
 class build_trans(cmd.Command):
@@ -97,7 +87,7 @@ class install_data(_install_data):
         for lang in os.listdir('build/locale/'):
             lang_dir = os.path.join('share', 'locale', lang, 'LC_MESSAGES')
             lang_file = os.path.join('build', 'locale', lang, 'LC_MESSAGES', 'rednotebook.mo')
-            self.data_files.append( (lang_dir, [lang_file]) )
+            self.data_files.append((lang_dir, [lang_file]))
         _install_data.run(self)
 
 
@@ -132,7 +122,7 @@ parameters = {
                             ['data/com.github.jendrikseipp.rednotebook-elementary.desktop']),
                            ('share/icons/hicolor/scalable/apps',
                             ['rednotebook/images/rednotebook-icon/rednotebook.svg']),
-                           ('share/appdata',
+                           ('share/metainfo',
                             ['data/com.github.jendrikseipp.rednotebook-elementary.appdata.xml']),
                           ],
     'cmdclass'          : cmdclass,

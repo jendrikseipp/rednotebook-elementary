@@ -30,7 +30,6 @@ from rednotebook.util import dates
 from rednotebook.gui import customwidgets
 from rednotebook.gui.customwidgets import Calendar, AssistantPage, \
     RadioButtonPage, PathChooserPage, Assistant
-from rednotebook.gui import browser
 from rednotebook.gui import options
 
 
@@ -304,18 +303,25 @@ class ExportAssistant(Assistant):
 
         self.set_title(_('Export Assistant'))
 
-        texts = [
-            _('Welcome to the Export Assistant.'),
-            _('This wizard will help you to export your journal to various formats.'),
-            _('You can select the days you want to export and where the output will be saved.')]
-        text = '\n'.join(texts)
-        self._add_intro_page(text)
+        def add_space():
+            self.page1.pack_start(Gtk.Label(''), False, False, 0)
 
         self.page1 = RadioButtonPage()
+        text = '\n'.join([
+            _('Welcome to the Export Assistant.'),
+            _('This wizard will help you to export your journal to various formats.'),
+            _('You can select the days you want to export and where the output will be saved.')])
+        welcome_label = Gtk.Label(text)
+        self.page1.pack_start(welcome_label, False, False, 0)
+        add_space()
         for exporter in self.exporters:
             name = exporter.NAME
             desc = exporter.DESCRIPTION
             self.page1.add_radio_option(exporter, name, desc)
+        add_space()
+        pdf_label = Gtk.Label(_('PDF: export to HTML, open in browser and print to PDF file'))
+        pdf_label.set_halign(Gtk.Align.START)
+        self.page1.pack_start(pdf_label, False, False, 0)
         self.append_page(self.page1)
         self.set_page_title(self.page1, _('Select Export Format') + ' (1/5)')
         self.set_page_complete(self.page1, True)
@@ -455,19 +461,8 @@ class ExportAssistant(Assistant):
 
     def export(self):
         format = self.exporter.FORMAT
-
-        if format == 'pdf':
-            self.export_pdf()
-            return
-
         export_string = self.get_export_string(format)
-
         filesystem.write_file(self.path, export_string)
-        self.journal.show_message(_('Content exported to %s') % self.path)
-
-    def export_pdf(self):
-        logging.info('Exporting to PDF')
-        browser.print_pdf(self.get_export_string('xhtml'), self.path)
         self.journal.show_message(_('Content exported to %s') % self.path)
 
 
@@ -535,27 +530,8 @@ class LatexExporter(Exporter):
     FORMAT = 'tex'
 
 
-class PdfExporter(Exporter):
-    NAME = 'PDF'
-    EXTENSION = 'pdf'
-    FORMAT = 'pdf'
-
-    @classmethod
-    def is_available(cls):
-        return bool(browser.WebKit2)
-
-    @property
-    def DESCRIPTION(self):
-        if self.is_available():
-            return ''
-        elif filesystem.IS_WIN:
-            return _('(export to HTML, open in browser and print to PDF file)')
-        else:
-            return _('(requires WebKit2Gtk+ 4.0)')
-
-
 def get_exporters():
-    exporters = [PlainTextExporter, HtmlExporter, LatexExporter, PdfExporter]
+    exporters = [PlainTextExporter, HtmlExporter, LatexExporter]
 
     # Instantiate exporters
     return [exporter() for exporter in exporters]

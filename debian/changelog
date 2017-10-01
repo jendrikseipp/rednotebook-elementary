@@ -1,3 +1,79 @@
+rednotebook (2.3-1) UNRELEASED; urgency=low
+
+  * New upstream release
+  * Compress backups.
+  * Use newer txt2tags version 2.6 and reapply changes to obtain a GPL-2+ version.
+  * Remove brittle PDF export. Please export to HTML and print to PDF with browser instead.
+  * Remove intro page from export wizard.
+  * Fix: image files were not found on Windows and Mac OS.
+  * Print peak memory usage on Linux when program exits.
+  * Hide tags panel completely by default instead of only minimizing it.
+  * Update Debian files (@kathenas).
+
+ -- Jendrik Seipp <jendrikseipp@web.de>  Mon, 25 Sep 2017 13:12:21 +0200
+
+rednotebook (2.2-1) unstable; urgency=medium
+
+  [ Jendrik Seipp ]
+  * New upstream release
+  * Port RedNotebook 2 to Windows.
+  * Windows: uninstall old version before installing new version to remove
+    old files.
+  * Windows: use Aspell for spell checking.
+
+  [ Omar Jair Purata Funes ]
+  * Team contribution - debug and packaging.
+
+  [ Phil Wyett ]
+  * Maintainer change.
+  * Add patch: appdata_path_and_description.patch
+    - Update appdata install path.
+    - Update description in appdata file to match debian control file.
+  * Add patch: txt2tags_license_update.patch
+    - Update license text.
+  * Remove debian/menu - Not necessary and causes lintian warning.
+  * Remove debian/README.sources - Not needed.
+  * Eliminate lintian pedantic warnings that are checked on the upload servers.
+  * Updated debian changelog - Various fixes.
+  * ITP: Submission of RedNotebook version 2.x. (Closes: #875264)
+
+ -- Phil Wyett <philwyett@kathenas.org>  Sat, 09 Sep 2017 23:57:57 +0100
+
+rednotebook (2.1.5-1) UNRELEASED; urgency=low
+
+  * New upstream release
+  * Fix debian/control.
+
+ -- Jendrik Seipp <jendrikseipp@web.de>  Wed, 09 Aug 2017 22:43:14 +0200
+
+rednotebook (2.1.4-1) UNRELEASED; urgency=low
+
+  * New upstream release
+  * Use old names for appdata and desktop files.
+
+ -- Jendrik Seipp <jendrikseipp@web.de>  Tue, 08 Aug 2017 14:33:49 +0200
+
+rednotebook (2.1.3-1) UNRELEASED; urgency=low
+
+  * New upstream release
+  * Fix creating translation files.
+
+ -- Jendrik Seipp <jendrikseipp@web.de>  Sun, 06 Aug 2017 14:20:02 +0200
+
+rednotebook (2.1.2-1) UNRELEASED; urgency=low
+
+  * New upstream release
+  * Fix "Exec" field in .desktop file.
+
+ -- Jendrik Seipp <jendrikseipp@web.de>  Thu, 03 Aug 2017 00:35:04 +0200
+
+rednotebook (2.1.1-1) UNRELEASED; urgency=low
+
+  * New upstream release
+  * Reset package name to 'rednotebook'.
+
+ -- Jendrik Seipp <jendrikseipp@web.de>  Wed, 02 Aug 2017 18:34:14 +0200
+
 rednotebook (2.1-1) UNRELEASED; urgency=low
 
   * New upstream release

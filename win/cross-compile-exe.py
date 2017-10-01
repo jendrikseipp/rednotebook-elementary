@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 """
 tar -czvf build-tar.gz build-dir:             1:40 min
@@ -33,7 +33,6 @@ DRIVE_C = os.path.join(DIST_DIR, 'drive_c')
 BUILD_DIR = os.path.abspath(args.build_dir)
 assert os.path.exists(BUILD_DIR), BUILD_DIR
 WINE_RN_DIR = os.path.join(DRIVE_C, 'rednotebook')
-WINE_RN_WIN_DIR = os.path.join(WINE_RN_DIR, 'win')
 SPEC = os.path.join(BASE_DIR, 'win', 'rednotebook.spec')
 WINE_BUILD = os.path.join(DRIVE_C, 'build')
 WINE_DIST = os.path.join(DRIVE_C, 'dist')
@@ -44,12 +43,14 @@ WINE_PYTHON = os.path.join(DRIVE_C, 'Python34', 'python.exe')
 utils.confirm_overwrite(DIST_DIR)
 os.environ['WINEPREFIX'] = DIST_DIR
 utils.ensure_path(os.path.dirname(DIST_DIR))
-print 'Start copying {} to {}'.format(BUILD_DIR, DIST_DIR)
+print('Start copying {} to {}'.format(BUILD_DIR, DIST_DIR))
 utils.fast_copytree(BUILD_DIR, DIST_DIR)
-print 'Finished copying'
+print('Finished copying')
 
 archive = '/tmp/rednotebook-archive.tar'
-run(['git', 'archive', 'HEAD', '-o', archive], cwd=BASE_DIR)
+stash_name = utils.get_output(['git', 'stash', 'create'], cwd=BASE_DIR)
+stash_name = stash_name or 'HEAD'
+run(['git', 'archive', stash_name, '-o', archive], cwd=BASE_DIR)
 utils.ensure_path(WINE_RN_DIR)
 run(['tar', '-xf', archive], cwd=WINE_RN_DIR)
 

@@ -19,7 +19,6 @@
 
 from collections import defaultdict
 import datetime
-import gettext
 import itertools
 import locale
 import logging
@@ -57,17 +56,36 @@ from rednotebook.util import filesystem
 
 # ---------------------- Enable i18n -------------------------------
 
-# We need to translate 3 different types of strings:
-# * sourcecode strings
-# * gtkbuilder strings
-# * gtk stock names
+from rednotebook.external import elibintl
 
 LOCALE_PATH = filesystem.locale_dir
 
-# the name of the gettext domain.
 GETTEXT_DOMAIN = 'rednotebook'
 
-gettext.install(GETTEXT_DOMAIN, LOCALE_PATH)
+"""
+On Windows, translations currently only work with a hack. We need to
+translate
+
+  1) Strings in source code.
+  2) GTK stock items.
+  3) Strings in the Glade file.
+
+1) works fine. For 3) we need a workaround in main_window.py. If we
+initialize libintl with elibintl, the translations for 2) stop working.
+Without the workaround we need to initalize libintl to avoid UTF-8
+encoding errors.
+
+When the problem is fixed upstream, we can pass libintl='libintl-8.dll'
+to elibintl. See also
+
+https://bugzilla.gnome.org/show_bug.cgi?id=574520
+https://bugzilla.gnome.org/show_bug.cgi?id=753991
+https://github.com/tobias47n9e/pygobject-locale
+https://sourceforge.net/p/pygobjectwin32/tickets/27/
+
+"""
+
+elibintl.install(GETTEXT_DOMAIN, LOCALE_PATH, libintl=None)
 
 # ------------------- end Enable i18n -------------------------------
 
@@ -376,10 +394,11 @@ class Journal:
     def save_old_day(self):
         '''Order is important'''
         old_content = self.day.content
-        self.day.content = self.frame.categories_tree_view.get_day_content()
-        self.day.text = self.frame.get_day_text()
+        new_content = self.frame.categories_tree_view.get_day_content()
+        new_content['text'] = self.frame.get_day_text()
+        self.day.content = new_content
 
-        content_changed = (old_content != self.day.content)
+        content_changed = (old_content != new_content)
         if content_changed:
             self.month.edited = True
 
@@ -557,7 +576,12 @@ def main():
         logging.debug('Trying to enter the gtk main loop')
         Gtk.main()
     except KeyboardInterrupt:
-        sys.exit()
+        pass
+
+    try:
+        logging.info("Peak memory: {} KiB".format(filesystem.get_peak_memory_in_kb()))
+    except Warning:
+        pass
 
 
 if __name__ == '__main__':
